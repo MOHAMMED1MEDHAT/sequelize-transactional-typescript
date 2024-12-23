@@ -1,6 +1,6 @@
 {
   "name": "sequelize-transactional-typescript",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A Transactional Method Decorator for sequelize that uses cls-hooked to handle and transactions between different repositories and service methods. Inspired by https://github.com/odavid/typeorm-transactional-cls-hooked",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
