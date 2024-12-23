@@ -1,4 +1,4 @@
-import { Provider } from '@nestjs/common';
+import { Module, OnModuleDestroy, Provider } from '@nestjs/common';
 import { createNamespace, getNamespace } from 'cls-hooked';
 import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
 
@@ -23,23 +23,36 @@ export const initializeSequelizeWithTransactionalContext = async (
   });
 };
 
-//Nest js
-export const SequelizeInstanceNestProvider: Provider = {
-  provide: SEQUELIZE_INSTANCE,
-  useFactory: async () => {
-    const namespace = getNamespace<Record<string, Sequelize>>(
-      SEQUELIZE_INSTANCE_NAME_SPACE,
-    );
-    if (!namespace) {
-      throw new Error('Namespace not initialized');
-    }
+export const getSequelizeInstance = (): Sequelize => {
+  const namespace = getNamespace<Record<string, Sequelize>>(
+    SEQUELIZE_INSTANCE_NAME_SPACE,
+  );
+  if (!namespace) {
+    throw new Error('Namespace not initialized');
+  }
 
-    const sequelizeInstance = namespace.get(SEQUELIZE_INSTANCE);
-    if (!sequelizeInstance) {
-      throw new Error(
-        'Sequelize instance not set in namespace, please call initializeSequelizeWithTransactionalContext first',
-      );
-    }
-    return sequelizeInstance;
+  const sequelizeInstance = namespace.get(SEQUELIZE_INSTANCE);
+  if (!sequelizeInstance) {
+    throw new Error(
+      'Sequelize Module could not be initialized, please call initializeSequelizeWithTransactionalContext first',
+    );
+  }
+  return sequelizeInstance;
+};
+
+//Nest js
+const SequelizeInstanceNestProvider: Provider = {
+  provide: SEQUELIZE_INSTANCE_NEST_DI_TOKEN,
+  useFactory: async () => {
+    return getSequelizeInstance();
   },
 };
+@Module({
+  providers: [SequelizeInstanceNestProvider],
+  exports: [SequelizeInstanceNestProvider],
+})
+export class SequelizeModule implements OnModuleDestroy {
+  async onModuleDestroy() {
+    await getSequelizeInstance().close();
+  }
+}

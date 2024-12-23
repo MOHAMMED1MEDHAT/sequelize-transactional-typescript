@@ -1,4 +1,5 @@
 import { getNamespace } from 'cls-hooked';
+import { log } from 'console';
 import sequelize from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { SEQUELIZE_INSTANCE, SEQUELIZE_INSTANCE_NAME_SPACE } from './common';
@@ -45,17 +46,18 @@ function wrapInTransaction<
 ): Func {
   async function wrapped(this: unknown, ...newArgs: unknown[]): Promise<void> {
     try {
+      log('inside wrapped');
       const context = getNamespace<Record<string, Sequelize>>(
         SEQUELIZE_INSTANCE_NAME_SPACE,
       );
       const sequelizeInstance = context.get(SEQUELIZE_INSTANCE);
-      await sequelizeInstance.transaction(
+      const result = await sequelizeInstance.transaction(
         {
           isolationLevel: isolationLevelLiteralToEnum[options.isolationLevel],
         },
         async (transaction: sequelize.Transaction) => {
           try {
-            const result = await func.apply(this, ...newArgs);
+            const result = await func.apply(this, newArgs);
             return result;
           } catch (error) {
             await transaction.rollback();
@@ -63,6 +65,7 @@ function wrapInTransaction<
           }
         },
       );
+      return result;
     } catch (error) {
       throw error;
     }
