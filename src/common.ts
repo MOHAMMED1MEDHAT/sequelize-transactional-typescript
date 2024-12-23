@@ -2,10 +2,11 @@ import { Provider } from '@nestjs/common';
 import { createNamespace, getNamespace } from 'cls-hooked';
 import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
 
-export const globalClsNsCtx = {};
+const globalClsNsCtx = {};
 export const SEQUELIZE_INSTANCE_NAME_SPACE =
   '__sequelize___cls_hooked_tx_namespace';
-export const SEQUELIZE_INSTANCE = 'SEQUELIZE_INSTANCE';
+export const SEQUELIZE_INSTANCE = 'SEQUELIZE_INSTANCE',
+  SEQUELIZE_INSTANCE_NEST_DI_TOKEN = 'SEQUELIZE_INSTANCE_NEST_DI_TOKEN';
 
 export const namespace =
   getNamespace(SEQUELIZE_INSTANCE_NAME_SPACE) ||
