@@ -1,13 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Transactional } from 'src';
-import { Post } from '../models/post.model';
+import { Post, RepositoryTokens } from '../models/post.model';
 import { IRepository } from '../modules/repository.interface';
+import { Transactional } from './../../../src';
 
 @Injectable()
 export class AppService {
-  constructor(@Inject() readonly repository: IRepository<Post>) {}
+  constructor(
+    @Inject(RepositoryTokens.PostRepository)
+    private readonly repository: IRepository<Post>,
+  ) {}
 
-  @Transactional()
+  @Transactional({
+    isolationLevel: 'READ COMMITTED',
+  })
   async createPost(fails: boolean = false): Promise<Post> {
     return await this.testTransactionIsolated(fails);
   }
@@ -17,7 +22,7 @@ export class AppService {
       message: 'halla walla 1',
     });
     await this.createHalla(fails);
-    return post;
+    return post.dataValues;
   }
 
   private async createHalla(fails: boolean): Promise<void> {

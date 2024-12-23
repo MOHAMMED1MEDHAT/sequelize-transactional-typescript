@@ -1,10 +1,11 @@
 import { Global, Module } from '@nestjs/common';
-import { SequelizeInstanceNestProvider } from 'src';
 import { repositories } from '../models/post.model';
+import { SequelizeModule } from './../../../src/common';
 
 @Global()
 @Module({
-  providers: [SequelizeInstanceNestProvider, ...repositories],
-  exports: [SequelizeInstanceNestProvider, ...repositories],
+  imports: [SequelizeModule],
+  providers: [...repositories],
+  exports: [...repositories],
 })
 export class DatabaseModule {}

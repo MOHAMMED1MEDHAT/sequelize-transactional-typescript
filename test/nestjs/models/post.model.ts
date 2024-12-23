@@ -1,3 +1,4 @@
+import { Provider } from '@nestjs/common';
 import {
   AutoIncrement,
   Column,
@@ -21,11 +22,10 @@ export class Post extends Model {
 
 export const models = [Post];
 
-export const repositories = models.map((m) => ({
+export const repositories: Provider[] = models.map((m) => ({
   provide: `${m.name}Repository`,
   useClass: buildRepository(m),
 }));
-
 export enum RepositoryTokens {
   PostRepository = 'PostRepository',
 }
