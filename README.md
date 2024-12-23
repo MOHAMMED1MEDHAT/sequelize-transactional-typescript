@@ -48,4 +48,4 @@ await initializeSequelizeWithTransactionalContext({
 
 ---
 
-Made With ❤️ @Baianat
+<!-- Made With ❤️ @Baianat -->
