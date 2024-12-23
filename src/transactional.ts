@@ -1,5 +1,4 @@
 import { getNamespace } from 'cls-hooked';
-import { log } from 'console';
 import sequelize from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { SEQUELIZE_INSTANCE, SEQUELIZE_INSTANCE_NAME_SPACE } from './common';
@@ -46,7 +45,6 @@ function wrapInTransaction<
 ): Func {
   async function wrapped(this: unknown, ...newArgs: unknown[]): Promise<void> {
     try {
-      log('inside wrapped');
       const context = getNamespace<Record<string, Sequelize>>(
         SEQUELIZE_INSTANCE_NAME_SPACE,
       );
