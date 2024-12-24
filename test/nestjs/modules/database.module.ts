@@ -4,8 +4,8 @@ import { SequelizeModule } from './../../../src/common';
 
 @Global()
 @Module({
-  imports: [SequelizeModule],
+  imports: [SequelizeModule.forRoot({ sync: { force: true } })],
   providers: [...repositories],
-  exports: [...repositories],
+  exports: [...repositories, SequelizeModule],
 })
 export class DatabaseModule {}
