@@ -48,7 +48,7 @@ export class SequelizeModule implements OnModuleDestroy {
     const SequelizeInstanceNestProvider: Provider = {
       provide: SEQUELIZE_INSTANCE_NEST_DI_TOKEN,
       useFactory: async () => {
-        options.sync && (await getSequelizeInstance().sync(options.sync));
+        if (options?.sync) await getSequelizeInstance().sync(options.sync);
         return getSequelizeInstance();
       },
     };

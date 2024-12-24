@@ -28,7 +28,7 @@ let AppService = class AppService {
             message: 'halla walla 1',
         });
         await this.createHalla(fails);
-        return post.dataValues;
+        return post;
     }
     async createHalla(fails) {
         await this.repository.createOne({

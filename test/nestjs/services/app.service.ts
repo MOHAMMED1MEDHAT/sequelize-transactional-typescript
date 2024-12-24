@@ -22,7 +22,7 @@ export class AppService {
       message: 'halla walla 1',
     });
     await this.createHalla(fails);
-    return post.dataValues;
+    return post;
   }
 
   private async createHalla(fails: boolean): Promise<void> {

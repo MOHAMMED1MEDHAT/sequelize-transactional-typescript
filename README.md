@@ -22,15 +22,12 @@ await initializeSequelizeWithTransactionalContext({
     });
 ```
 
-- for nestjs: import **SequelizeModule** and add it to your DatabaseModule Like the following**:**
+- for nestjs: import **SequelizeModule** and add it to your AppModule Like the following**:**
   ```tsx
-  @Global()
   @Module({
-    imports: [SequelizeModule],
-    providers: [...repositories],
-    exports: [...repositories],
+    imports: [SequelizeModule.forRoot()],
   })
-  export class DatabaseModule {}
+  export class AppModule {}
   ```
 
 ---

@@ -33,7 +33,8 @@ class SequelizeModule {
         const SequelizeInstanceNestProvider = {
             provide: exports.SEQUELIZE_INSTANCE_NEST_DI_TOKEN,
             useFactory: async () => {
-                options.sync && (await (0, exports.getSequelizeInstance)().sync(options.sync));
+                if (options?.sync)
+                    await (0, exports.getSequelizeInstance)().sync(options.sync);
                 return (0, exports.getSequelizeInstance)();
             },
         };
