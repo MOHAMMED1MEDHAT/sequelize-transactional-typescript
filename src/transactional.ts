@@ -49,21 +49,19 @@ function wrapInTransaction<
         SEQUELIZE_INSTANCE_NAME_SPACE,
       );
       const sequelizeInstance = context.get(SEQUELIZE_INSTANCE);
-      const result = await sequelizeInstance.transaction(
+      return await sequelizeInstance.transaction(
         {
           isolationLevel: isolationLevelLiteralToEnum[options.isolationLevel],
         },
         async (transaction: sequelize.Transaction) => {
           try {
-            const result = await func.apply(this, newArgs);
-            return result;
+            return await func.apply(this, newArgs);
           } catch (error) {
             await transaction.rollback();
             throw error;
           }
         },
       );
-      return result;
     } catch (error) {
       throw error;
     }

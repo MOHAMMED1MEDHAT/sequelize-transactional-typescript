@@ -1,5 +1,6 @@
-import { Module, OnModuleDestroy, Provider } from '@nestjs/common';
+import { DynamicModule, OnModuleDestroy, Provider } from '@nestjs/common';
 import { createNamespace, getNamespace } from 'cls-hooked';
+import { SyncOptions } from 'sequelize';
 import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
 
 const globalClsNsCtx = {};
@@ -40,18 +41,24 @@ export const getSequelizeInstance = (): Sequelize => {
   return sequelizeInstance;
 };
 
-//Nest js
-const SequelizeInstanceNestProvider: Provider = {
-  provide: SEQUELIZE_INSTANCE_NEST_DI_TOKEN,
-  useFactory: async () => {
-    return getSequelizeInstance();
-  },
-};
-@Module({
-  providers: [SequelizeInstanceNestProvider],
-  exports: [SequelizeInstanceNestProvider],
-})
+export type SequelizeModuleOptions = { sync: SyncOptions };
+
 export class SequelizeModule implements OnModuleDestroy {
+  public static forRoot(options?: SequelizeModuleOptions): DynamicModule {
+    const SequelizeInstanceNestProvider: Provider = {
+      provide: SEQUELIZE_INSTANCE_NEST_DI_TOKEN,
+      useFactory: async () => {
+        options.sync && (await getSequelizeInstance().sync(options.sync));
+        return getSequelizeInstance();
+      },
+    };
+    return {
+      module: SequelizeModule,
+      providers: [SequelizeInstanceNestProvider],
+      exports: [SequelizeInstanceNestProvider],
+    };
+  }
+
   async onModuleDestroy() {
     await getSequelizeInstance().close();
   }
