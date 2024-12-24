@@ -53,6 +53,7 @@ export class SequelizeModule implements OnModuleDestroy {
       },
     };
     return {
+      global: true,
       module: SequelizeModule,
       providers: [SequelizeInstanceNestProvider],
       exports: [SequelizeInstanceNestProvider],

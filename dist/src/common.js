@@ -39,6 +39,7 @@ class SequelizeModule {
             },
         };
         return {
+            global: true,
             module: SequelizeModule,
             providers: [SequelizeInstanceNestProvider],
             exports: [SequelizeInstanceNestProvider],
