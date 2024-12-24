@@ -16,9 +16,9 @@ exports.DatabaseModule = DatabaseModule;
 exports.DatabaseModule = DatabaseModule = __decorate([
     (0, common_1.Global)(),
     (0, common_1.Module)({
-        imports: [common_2.SequelizeModule],
+        imports: [common_2.SequelizeModule.forRoot({ sync: { force: true } })],
         providers: [...post_model_1.repositories],
-        exports: [...post_model_1.repositories],
+        exports: [...post_model_1.repositories, common_2.SequelizeModule],
     })
 ], DatabaseModule);
 //# sourceMappingURL=database.module.js.map
