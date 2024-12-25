@@ -29,12 +29,11 @@ const getSequelizeInstance = () => {
 };
 exports.getSequelizeInstance = getSequelizeInstance;
 class SequelizeModule {
-    static forRoot(options) {
+    static forRoot() {
         const SequelizeInstanceNestProvider = {
             provide: exports.SEQUELIZE_INSTANCE_NEST_DI_TOKEN,
             useFactory: async () => {
-                await (0, exports.getSequelizeInstance)().sync(options?.sync);
-                return (0, exports.getSequelizeInstance)();
+                return await (0, exports.getSequelizeInstance)().sync((0, exports.getSequelizeInstance)().options.sync);
             },
         };
         return {

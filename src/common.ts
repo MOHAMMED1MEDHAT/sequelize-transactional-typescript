@@ -44,12 +44,13 @@ export const getSequelizeInstance = (): Sequelize => {
 export type SequelizeModuleOptions = { sync: SyncOptions };
 
 export class SequelizeModule implements OnModuleDestroy {
-  public static forRoot(options?: SequelizeModuleOptions): DynamicModule {
+  public static forRoot(): DynamicModule {
     const SequelizeInstanceNestProvider: Provider = {
       provide: SEQUELIZE_INSTANCE_NEST_DI_TOKEN,
       useFactory: async () => {
-        await getSequelizeInstance().sync(options?.sync);
-        return getSequelizeInstance();
+        return await getSequelizeInstance().sync(
+          getSequelizeInstance().options.sync,
+        );
       },
     };
     return {

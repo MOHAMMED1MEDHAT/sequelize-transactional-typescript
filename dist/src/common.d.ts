@@ -10,6 +10,6 @@ export type SequelizeModuleOptions = {
     sync: SyncOptions;
 };
 export declare class SequelizeModule implements OnModuleDestroy {
-    static forRoot(options?: SequelizeModuleOptions): DynamicModule;
+    static forRoot(): DynamicModule;
     onModuleDestroy(): Promise<void>;
 }

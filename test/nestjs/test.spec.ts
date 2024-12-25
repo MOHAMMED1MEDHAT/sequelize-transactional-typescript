@@ -19,8 +19,8 @@ describe('NestJS', () => {
       password: 'postgres',
       database: 'test',
       models: [Post],
-      // logging: (sql) => console.log(sql),
-      logging: false,
+      logging: (sql) => console.log(sql),
+      // logging: false,
       sync: {
         force: true,
       },
