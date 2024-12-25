@@ -11,21 +11,13 @@
 NOTE: for nestjs, it must be called before nest app creation.
 
 ```tsx
-await initializeSequelizeWithTransactionalContext({
-      dialect,
-      host,
-      port,
-      username,
-      password,
-      database,
-      models: ...Model,
-    });
+await initializeSequelizeWithTransactionalContext();
 ```
 
 - for nestjs: import **SequelizeModule** and add it to your AppModule Like the following**:**
   ```tsx
   @Module({
-    imports: [SequelizeModule.forRoot()],
+    imports: [SequelizeModule.forRoot(<SequelizeModuleOptions>)],
   })
   export class AppModule {}
   ```
@@ -44,5 +36,3 @@ await initializeSequelizeWithTransactionalContext({
 ```
 
 ---
-
-<!-- Made With ❤️ @Baianat -->

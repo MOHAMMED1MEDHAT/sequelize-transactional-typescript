@@ -1,9 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  initializeSequelizeWithTransactionalContext,
-  SequelizeModule,
-} from './../../src';
-import { Post } from './models/post.model';
+import { initializeSequelizeWithTransactionalContext } from './../../src';
 import { DatabaseModule } from './modules/database.module';
 import { AppService } from './services/app.service';
 
@@ -11,22 +7,9 @@ describe('NestJS', () => {
   let app: TestingModule;
   let service: AppService;
   beforeAll(async () => {
-    await initializeSequelizeWithTransactionalContext({
-      dialect: 'postgres',
-      host: 'localhost',
-      port: 5433,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'test',
-      models: [Post],
-      logging: (sql) => console.log(sql),
-      // logging: false,
-      sync: {
-        force: true,
-      },
-    });
+    await initializeSequelizeWithTransactionalContext();
     app = await Test.createTestingModule({
-      imports: [SequelizeModule.forRoot(), DatabaseModule],
+      imports: [DatabaseModule],
       providers: [AppService],
     }).compile();
     service = app.get<AppService>(AppService);

@@ -1,6 +1,5 @@
 import { DynamicModule, OnModuleDestroy, Provider } from '@nestjs/common';
 import { createNamespace, getNamespace } from 'cls-hooked';
-import { SyncOptions } from 'sequelize';
 import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
 
 const globalClsNsCtx = {};
@@ -13,18 +12,11 @@ export const namespace =
   getNamespace(SEQUELIZE_INSTANCE_NAME_SPACE) ||
   createNamespace<Record<string, Sequelize>>(SEQUELIZE_INSTANCE_NAME_SPACE);
 
-export const initializeSequelizeWithTransactionalContext = async (
-  config: SequelizeOptions,
-) => {
+export const initializeSequelizeWithTransactionalContext = async () => {
   Sequelize.useCLS(namespace);
-
-  namespace.run(() => {
-    namespace.enter(globalClsNsCtx);
-    namespace.set(SEQUELIZE_INSTANCE, new Sequelize(config));
-  });
 };
 
-export const getSequelizeInstance = (): Sequelize => {
+export const getSequelizeInstanceCLS = (): Sequelize => {
   const namespace = getNamespace<Record<string, Sequelize>>(
     SEQUELIZE_INSTANCE_NAME_SPACE,
   );
@@ -41,16 +33,24 @@ export const getSequelizeInstance = (): Sequelize => {
   return sequelizeInstance;
 };
 
-export type SequelizeModuleOptions = { sync: SyncOptions };
+const setSequelizeInstanceCLS = (sequelize: Sequelize) => {
+  namespace.run(() => {
+    namespace.enter(globalClsNsCtx);
+    namespace.set(SEQUELIZE_INSTANCE, sequelize);
+  });
+};
 
 export class SequelizeModule implements OnModuleDestroy {
-  public static forRoot(): DynamicModule {
+  public static forRoot(options: SequelizeOptions): DynamicModule {
     const SequelizeInstanceNestProvider: Provider = {
       provide: SEQUELIZE_INSTANCE_NEST_DI_TOKEN,
       useFactory: async () => {
-        return await getSequelizeInstance().sync(
-          getSequelizeInstance().options.sync,
-        );
+        const sequelize = new Sequelize({
+          ...options,
+        });
+        setSequelizeInstanceCLS(sequelize);
+        await getSequelizeInstanceCLS().sync(options?.sync);
+        return sequelize;
       },
     };
     return {
@@ -62,6 +62,6 @@ export class SequelizeModule implements OnModuleDestroy {
   }
 
   async onModuleDestroy() {
-    await getSequelizeInstance().close();
+    await getSequelizeInstanceCLS().close();
   }
 }
