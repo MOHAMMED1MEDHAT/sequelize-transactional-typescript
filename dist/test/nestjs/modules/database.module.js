@@ -9,12 +9,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DatabaseModule = void 0;
 const common_1 = require("@nestjs/common");
 const post_model_1 = require("../models/post.model");
+const src_1 = require("./../../../src");
 let DatabaseModule = class DatabaseModule {
 };
 exports.DatabaseModule = DatabaseModule;
 exports.DatabaseModule = DatabaseModule = __decorate([
     (0, common_1.Global)(),
     (0, common_1.Module)({
+        imports: [
+            src_1.SequelizeModule.forRoot({
+                dialect: 'postgres',
+                host: 'localhost',
+                port: 5433,
+                username: 'postgres',
+                password: 'postgres',
+                database: 'test',
+                models: [post_model_1.Post],
+                logging: (sql) => console.log(sql),
+                sync: {
+                    force: true,
+                },
+            }),
+        ],
         providers: [...post_model_1.repositories],
         exports: [...post_model_1.repositories],
     })

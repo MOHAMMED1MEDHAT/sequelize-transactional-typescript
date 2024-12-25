@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SequelizeModule = exports.getSequelizeInstance = exports.initializeSequelizeWithTransactionalContext = exports.namespace = exports.SEQUELIZE_INSTANCE_NEST_DI_TOKEN = exports.SEQUELIZE_INSTANCE = exports.SEQUELIZE_INSTANCE_NAME_SPACE = void 0;
+exports.SequelizeModule = exports.getSequelizeInstanceCLS = exports.initializeSequelizeWithTransactionalContext = exports.namespace = exports.SEQUELIZE_INSTANCE_NEST_DI_TOKEN = exports.SEQUELIZE_INSTANCE = exports.SEQUELIZE_INSTANCE_NAME_SPACE = void 0;
 const cls_hooked_1 = require("cls-hooked");
 const sequelize_typescript_1 = require("sequelize-typescript");
 const globalClsNsCtx = {};
@@ -8,15 +8,11 @@ exports.SEQUELIZE_INSTANCE_NAME_SPACE = '__sequelize___cls_hooked_tx_namespace';
 exports.SEQUELIZE_INSTANCE = 'SEQUELIZE_INSTANCE', exports.SEQUELIZE_INSTANCE_NEST_DI_TOKEN = 'SEQUELIZE_INSTANCE_NEST_DI_TOKEN';
 exports.namespace = (0, cls_hooked_1.getNamespace)(exports.SEQUELIZE_INSTANCE_NAME_SPACE) ||
     (0, cls_hooked_1.createNamespace)(exports.SEQUELIZE_INSTANCE_NAME_SPACE);
-const initializeSequelizeWithTransactionalContext = async (config) => {
+const initializeSequelizeWithTransactionalContext = async () => {
     sequelize_typescript_1.Sequelize.useCLS(exports.namespace);
-    exports.namespace.run(() => {
-        exports.namespace.enter(globalClsNsCtx);
-        exports.namespace.set(exports.SEQUELIZE_INSTANCE, new sequelize_typescript_1.Sequelize(config));
-    });
 };
 exports.initializeSequelizeWithTransactionalContext = initializeSequelizeWithTransactionalContext;
-const getSequelizeInstance = () => {
+const getSequelizeInstanceCLS = () => {
     const namespace = (0, cls_hooked_1.getNamespace)(exports.SEQUELIZE_INSTANCE_NAME_SPACE);
     if (!namespace) {
         throw new Error('Namespace not initialized');
@@ -27,13 +23,24 @@ const getSequelizeInstance = () => {
     }
     return sequelizeInstance;
 };
-exports.getSequelizeInstance = getSequelizeInstance;
+exports.getSequelizeInstanceCLS = getSequelizeInstanceCLS;
+const setSequelizeInstanceCLS = (sequelize) => {
+    exports.namespace.run(() => {
+        exports.namespace.enter(globalClsNsCtx);
+        exports.namespace.set(exports.SEQUELIZE_INSTANCE, sequelize);
+    });
+};
 class SequelizeModule {
-    static forRoot() {
+    static forRoot(options) {
         const SequelizeInstanceNestProvider = {
             provide: exports.SEQUELIZE_INSTANCE_NEST_DI_TOKEN,
             useFactory: async () => {
-                return await (0, exports.getSequelizeInstance)().sync((0, exports.getSequelizeInstance)().options.sync);
+                const sequelize = new sequelize_typescript_1.Sequelize({
+                    ...options,
+                });
+                setSequelizeInstanceCLS(sequelize);
+                await (0, exports.getSequelizeInstanceCLS)().sync(options?.sync);
+                return sequelize;
             },
         };
         return {
@@ -44,7 +51,7 @@ class SequelizeModule {
         };
     }
     async onModuleDestroy() {
-        await (0, exports.getSequelizeInstance)().close();
+        await (0, exports.getSequelizeInstanceCLS)().close();
     }
 }
 exports.SequelizeModule = SequelizeModule;

@@ -2,28 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const testing_1 = require("@nestjs/testing");
 const src_1 = require("./../../src");
-const post_model_1 = require("./models/post.model");
 const database_module_1 = require("./modules/database.module");
 const app_service_1 = require("./services/app.service");
 describe('NestJS', () => {
     let app;
     let service;
     beforeAll(async () => {
-        await (0, src_1.initializeSequelizeWithTransactionalContext)({
-            dialect: 'postgres',
-            host: 'localhost',
-            port: 5433,
-            username: 'postgres',
-            password: 'postgres',
-            database: 'test',
-            models: [post_model_1.Post],
-            logging: (sql) => console.log(sql),
-            sync: {
-                force: true,
-            },
-        });
+        await (0, src_1.initializeSequelizeWithTransactionalContext)();
         app = await testing_1.Test.createTestingModule({
-            imports: [src_1.SequelizeModule.forRoot(), database_module_1.DatabaseModule],
+            imports: [database_module_1.DatabaseModule],
             providers: [app_service_1.AppService],
         }).compile();
         service = app.get(app_service_1.AppService);
