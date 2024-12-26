@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SequelizeModule = exports.getSequelizeInstanceCLS = exports.initializeSequelizeWithTransactionalContext = exports.namespace = exports.SEQUELIZE_INSTANCE_NEST_DI_TOKEN = exports.SEQUELIZE_INSTANCE = exports.SEQUELIZE_INSTANCE_NAME_SPACE = void 0;
+exports.SequelizeModule = exports.initializeSequelizeWithTransactionalContext = exports.namespace = exports.SEQUELIZE_INSTANCE_NEST_DI_TOKEN = exports.SEQUELIZE_INSTANCE = exports.SEQUELIZE_INSTANCE_NAME_SPACE = void 0;
 const cls_hooked_1 = require("cls-hooked");
 const sequelize_typescript_1 = require("sequelize-typescript");
 const globalClsNsCtx = {};
@@ -8,7 +8,7 @@ exports.SEQUELIZE_INSTANCE_NAME_SPACE = '__sequelize___cls_hooked_tx_namespace';
 exports.SEQUELIZE_INSTANCE = 'SEQUELIZE_INSTANCE', exports.SEQUELIZE_INSTANCE_NEST_DI_TOKEN = 'SEQUELIZE_INSTANCE_NEST_DI_TOKEN';
 exports.namespace = (0, cls_hooked_1.getNamespace)(exports.SEQUELIZE_INSTANCE_NAME_SPACE) ||
     (0, cls_hooked_1.createNamespace)(exports.SEQUELIZE_INSTANCE_NAME_SPACE);
-const initializeSequelizeWithTransactionalContext = async () => {
+const initializeSequelizeWithTransactionalContext = () => {
     sequelize_typescript_1.Sequelize.useCLS(exports.namespace);
 };
 exports.initializeSequelizeWithTransactionalContext = initializeSequelizeWithTransactionalContext;
@@ -23,7 +23,6 @@ const getSequelizeInstanceCLS = () => {
     }
     return sequelizeInstance;
 };
-exports.getSequelizeInstanceCLS = getSequelizeInstanceCLS;
 const setSequelizeInstanceCLS = (sequelize) => {
     exports.namespace.run(() => {
         exports.namespace.enter(globalClsNsCtx);
@@ -39,7 +38,7 @@ class SequelizeModule {
                     ...options,
                 });
                 setSequelizeInstanceCLS(sequelize);
-                await (0, exports.getSequelizeInstanceCLS)().sync(options?.sync);
+                await getSequelizeInstanceCLS().sync(options?.sync);
                 return sequelize;
             },
         };
@@ -51,7 +50,7 @@ class SequelizeModule {
         };
     }
     async onModuleDestroy() {
-        await (0, exports.getSequelizeInstanceCLS)().close();
+        await getSequelizeInstanceCLS().close();
     }
 }
 exports.SequelizeModule = SequelizeModule;

@@ -8,9 +8,10 @@ function Transactional(options = {
     isolationLevel: 'READ COMMITTED',
 }) {
     return (_, __, descriptor) => {
-        descriptor.value = wrapInTransaction(descriptor.value, options);
-        Reflect.getMetadataKeys(descriptor.value).forEach((previousMetadataKey) => {
-            const previousMetadata = Reflect.getMetadata(previousMetadataKey, descriptor.value);
+        const originalMethod = descriptor.value;
+        descriptor.value = wrapInTransaction(originalMethod, options);
+        Reflect.getMetadataKeys(originalMethod).forEach((previousMetadataKey) => {
+            const previousMetadata = Reflect.getMetadata(previousMetadataKey, originalMethod);
             Reflect.defineMetadata(previousMetadataKey, previousMetadata, descriptor.value);
         });
         Object.defineProperty(descriptor.value, 'name', {
