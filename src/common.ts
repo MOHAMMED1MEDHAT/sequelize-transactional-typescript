@@ -12,11 +12,11 @@ export const namespace =
   getNamespace(SEQUELIZE_INSTANCE_NAME_SPACE) ||
   createNamespace<Record<string, Sequelize>>(SEQUELIZE_INSTANCE_NAME_SPACE);
 
-export const initializeSequelizeWithTransactionalContext = async () => {
+export const initializeSequelizeWithTransactionalContext = () => {
   Sequelize.useCLS(namespace);
 };
 
-export const getSequelizeInstanceCLS = (): Sequelize => {
+const getSequelizeInstanceCLS = (): Sequelize => {
   const namespace = getNamespace<Record<string, Sequelize>>(
     SEQUELIZE_INSTANCE_NAME_SPACE,
   );

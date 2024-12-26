@@ -14,12 +14,14 @@ export function Transactional(
   },
 ): MethodDecorator {
   return (_, __, descriptor: PropertyDescriptor) => {
-    descriptor.value = wrapInTransaction(descriptor.value, options);
+    const originalMethod = descriptor.value;
 
-    Reflect.getMetadataKeys(descriptor.value).forEach((previousMetadataKey) => {
+    descriptor.value = wrapInTransaction(originalMethod, options);
+
+    Reflect.getMetadataKeys(originalMethod).forEach((previousMetadataKey) => {
       const previousMetadata = Reflect.getMetadata(
         previousMetadataKey,
-        descriptor.value,
+        originalMethod,
       );
       Reflect.defineMetadata(
         previousMetadataKey,
@@ -43,7 +45,7 @@ function wrapInTransaction<
     isolationLevel: 'READ COMMITTED',
   },
 ): Func {
-  async function wrapped(this: unknown, ...newArgs: unknown[]): Promise<void> {
+  async function wrapped(this: unknown, ...newArgs: unknown[]): Promise<any> {
     try {
       const context = getNamespace<Record<string, Sequelize>>(
         SEQUELIZE_INSTANCE_NAME_SPACE,
