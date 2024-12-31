@@ -7,7 +7,7 @@ describe('NestJS', () => {
   let app: TestingModule;
   let service: AppService;
   beforeAll(async () => {
-    await initializeSequelizeWithTransactionalContext();
+    initializeSequelizeWithTransactionalContext();
     app = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [AppService],

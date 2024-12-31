@@ -41,16 +41,21 @@ const setSequelizeInstanceCLS = (sequelize: Sequelize) => {
 };
 
 export class SequelizeModule implements OnModuleDestroy {
-  public static forRoot(options: SequelizeOptions): DynamicModule {
+  public static forRoot(options: SequelizeOptions = undefined): DynamicModule {
     const SequelizeInstanceNestProvider: Provider = {
       provide: SEQUELIZE_INSTANCE_NEST_DI_TOKEN,
       useFactory: async () => {
-        const sequelize = new Sequelize({
-          ...options,
-        });
-        setSequelizeInstanceCLS(sequelize);
-        await getSequelizeInstanceCLS().sync(options?.sync);
-        return sequelize;
+        try {
+          if (!options) {
+            throw new Error('Sequelize options not provided');
+          }
+          const sequelize = new Sequelize(options);
+          setSequelizeInstanceCLS(sequelize);
+          await getSequelizeInstanceCLS().sync(options?.sync);
+          return sequelize;
+        } catch (e) {
+          throw e;
+        }
       },
     };
     return {
