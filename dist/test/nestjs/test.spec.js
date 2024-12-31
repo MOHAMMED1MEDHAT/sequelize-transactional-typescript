@@ -8,7 +8,7 @@ describe('NestJS', () => {
     let app;
     let service;
     beforeAll(async () => {
-        await (0, src_1.initializeSequelizeWithTransactionalContext)();
+        (0, src_1.initializeSequelizeWithTransactionalContext)();
         app = await testing_1.Test.createTestingModule({
             imports: [database_module_1.DatabaseModule],
             providers: [app_service_1.AppService],

@@ -30,16 +30,22 @@ const setSequelizeInstanceCLS = (sequelize) => {
     });
 };
 class SequelizeModule {
-    static forRoot(options) {
+    static forRoot(options = undefined) {
         const SequelizeInstanceNestProvider = {
             provide: exports.SEQUELIZE_INSTANCE_NEST_DI_TOKEN,
             useFactory: async () => {
-                const sequelize = new sequelize_typescript_1.Sequelize({
-                    ...options,
-                });
-                setSequelizeInstanceCLS(sequelize);
-                await getSequelizeInstanceCLS().sync(options?.sync);
-                return sequelize;
+                try {
+                    if (!options) {
+                        throw new Error('Sequelize options not provided');
+                    }
+                    const sequelize = new sequelize_typescript_1.Sequelize(options);
+                    setSequelizeInstanceCLS(sequelize);
+                    await getSequelizeInstanceCLS().sync(options?.sync);
+                    return sequelize;
+                }
+                catch (e) {
+                    throw e;
+                }
             },
         };
         return {
